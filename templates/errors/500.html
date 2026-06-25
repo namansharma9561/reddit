@@ -1,0 +1,16 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Server Error — Reddit{% endblock %}
+{% block extra_css %}
+.err-page { text-align:center; padding: 80px 20px; }
+.err-code { font-size: 96px; font-weight: 800; color: var(--orange); line-height: 1; }
+.err-title { font-size: 24px; font-weight: 700; margin: 12px 0 8px; }
+.err-msg { color: var(--muted); font-size: 15px; margin-bottom: 28px; }
+{% endblock %}
+{% block content %}
+<div class="err-page">
+  <div class="err-code">500</div>
+  <div class="err-title">Something went wrong</div>
+  <div class="err-msg">This is on us, not you. Try again in a moment.</div>
+  <a href="{% url 'home' %}" class="btn btn-orange">Go Home</a>
+</div>
+{% endblock %}

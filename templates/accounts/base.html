@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{% block title %}Reddit{% endblock %}</title>
+        <style>
+            *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+            :root {
+              --orange:       #FF4500;
+              --orange-h:     #E03D00;
+              --blue:         #0079D3;
+              --blue-h:       #005fa3;
+              --bg:           #DAE0E6;
+              --card:         #FFFFFF;
+              --border:       #EDEFF1;
+              --text:         #1C1C1C;
+              --muted:        #878A8C;
+              --input-bg:     #F6F7F8;
+              --error:        #FF585B;
+              --success:      #46D160;
+              --nav-h:        48px;
+            }
+
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+              background: var(--bg);
+              color: var(--text);
+              min-height: 100vh;
+              font-size: 14px;
+              line-height: 1.5;
+            }
+
+            /* ── NAV ── */
+            nav {
+              position: sticky; top: 0; z-index: 200;
+              height: var(--nav-h);
+              background: var(--card);
+              border-bottom: 1px solid var(--border);
+              display: flex; align-items: center;
+              padding: 0 20px; gap: 12px;
+            }
+
+            .nav-logo {
+              display: flex; align-items: center; gap: 8px;
+              text-decoration: none; color: var(--text);
+              font-weight: 800; font-size: 18px; flex-shrink: 0;
+            }
+
+            .nav-logo svg { width: 32px; height: 32px; }
+
+            .nav-search {
+              flex: 1; max-width: 690px; position: relative;
+            }
+
+            .nav-search input {
+              width: 100%; height: 36px;
+              background: var(--input-bg);
+              border: 1px solid var(--border);
+              border-radius: 20px;
+              padding: 0 16px 0 40px;
+              font-size: 14px; outline: none;
+              transition: border-color .2s, background .2s;
+            }
+
+            .nav-search input:focus { border-color: var(--blue); background: #fff; }
+
+            .nav-search .ico {
+              position: absolute; left: 13px; top: 50%;
+              transform: translateY(-50%); color: var(--muted);
+              pointer-events: none;
+            }
+
+            .nav-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+
+            /* ── BUTTONS ── */
+            .btn {
+              display: inline-flex; align-items: center; justify-content: center;
+              padding: 6px 16px; border-radius: 20px;
+              font-size: 14px; font-weight: 700; cursor: pointer;
+              text-decoration: none; border: 1px solid transparent;
+              transition: all .15s; white-space: nowrap; outline: none;
+            }
+            .btn-outline-blue  { border-color: var(--blue);   color: var(--blue);   background: transparent; }
+            .btn-outline-blue:hover  { background: rgba(0,121,211,.08); }
+            .btn-orange        { background: var(--orange); color: #fff; border-color: var(--orange); }
+            .btn-orange:hover  { background: var(--orange-h); }
+            .btn-outline-orange{ border-color: var(--orange); color: var(--orange); background: transparent; }
+            .btn-outline-orange:hover { background: rgba(255,69,0,.08); }
+
+            /* ── MESSAGES ── */
+            .flash-wrap { max-width: 900px; margin: 12px auto 0; padding: 0 20px; }
+            .flash {
+              padding: 10px 16px; border-radius: 4px;
+              margin-bottom: 8px; font-size: 13px; font-weight: 500;
+            }
+            .flash.success { background:#e8f5e9; color:#2e7d32; border-left:4px solid var(--success); }
+            .flash.error   { background:#ffebee; color:#c62828; border-left:4px solid var(--error); }
+            .flash.info    { background:#e3f2fd; color:#1565c0; border-left:4px solid var(--blue); }
+
+            {% block extra_css %}{% endblock %}
+        </style>
+    </head>
+    <body>
+        <nav>
+            <a
+                href="{% if user.is_authenticated %}{% url 'home' %}{% else %}{% url 'login' %}{% endif %}"
+                class="nav-logo"
+            >
+                <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="10" cy="10" r="10" fill="#FF4500" />
+                    <ellipse cx="10" cy="11.5" rx="5.5" ry="3.8" fill="white" />
+                    <circle cx="7.8" cy="11" r="1" fill="#FF4500" />
+                    <circle cx="12.2" cy="11" r="1" fill="#FF4500" />
+                    <path
+                        d="M8.2 13.2 Q10 14.2 11.8 13.2"
+                        stroke="#FF4500"
+                        stroke-width=".9"
+                        fill="none"
+                        stroke-linecap="round"
+                    />
+                    <circle cx="15.5" cy="5.5" r="1.2" fill="white" />
+                    <path
+                        d="M10.2 5.5 L14.4 5.5"
+                        stroke="white"
+                        stroke-width="1.2"
+                        stroke-linecap="round"
+                    />
+                    <line
+                        x1="15.5"
+                        y1="5.5"
+                        x2="13"
+                        y2="8"
+                        stroke="white"
+                        stroke-width="1.2"
+                        stroke-linecap="round"
+                    />
+                </svg>
+                reddit
+            </a>
+
+            <div class="nav-search">
+                <span class="ico">
+                    <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                    >
+                        <path
+                            d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+                        />
+                    </svg>
+                </span>
+                <input type="text" placeholder="Search Reddit" />
+            </div>
+
+            <div class="nav-right">
+                {% if user.is_authenticated %}
+                <span
+                    style="
+                        color: var(--muted);
+                        font-size: 13px;
+                        font-weight: 600;
+                    "
+                    >u/{{ user.username }}</span
+                >
+                <form
+                    method="post"
+                    action="{% url 'logout' %}"
+                    style="margin: 0"
+                >
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-blue">
+                        Log Out
+                    </button>
+                </form>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn btn-outline-orange"
+                    >Log In</a
+                >
+                <a href="{% url 'signup' %}" class="btn btn-orange">Sign Up</a>
+                {% endif %}
+            </div>
+        </nav>
+
+        {% if messages %}
+        <div class="flash-wrap">
+            {% for m in messages %}
+            <div class="flash {{ m.tags }}">{{ m }}</div>
+            {% endfor %}
+        </div>
+        {% endif %} {% block content %}{% endblock %}
+    </body>
+</html>

@@ -1,0 +1,131 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Log In — Reddit{% endblock %}
+
+{% block extra_css %}
+.auth-page {
+  min-height: calc(100vh - var(--nav-h));
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px 16px;
+}
+
+.auth-box {
+  display: flex; width: 100%; max-width: 880px;
+  background: var(--card);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,.12);
+}
+
+.auth-panel {
+  width: 260px; flex-shrink: 0;
+  background: linear-gradient(170deg,#0079D3 0%,#005fa3 60%,#003d6b 100%);
+  padding: 40px 24px;
+  color: #fff;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  position: relative; overflow: hidden;
+}
+
+.auth-panel::before {
+  content:''; position:absolute; top:-50px; right:-50px;
+  width:200px; height:200px;
+  background:rgba(255,255,255,.08); border-radius:50%;
+}
+
+.auth-panel-emoji { font-size:72px; text-align:center; margin-bottom:20px; position:relative; z-index:1; }
+.auth-panel h2 { font-size:20px; font-weight:800; margin-bottom:8px; position:relative; z-index:1; }
+.auth-panel p  { font-size:13px; opacity:.85; line-height:1.6; position:relative; z-index:1; }
+
+.auth-form {
+  flex:1; padding: 48px 36px;
+  display:flex; flex-direction:column; justify-content:center;
+}
+
+.auth-form h1 { font-size:20px; font-weight:700; margin-bottom:4px; }
+.auth-sub { color:var(--muted); font-size:12px; margin-bottom:28px; }
+
+.field { margin-bottom:16px; }
+.field-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); margin-bottom:6px; }
+
+.auth-input {
+  display:block; width:100%; height:48px;
+  background:var(--input-bg); border:1px solid var(--border);
+  border-radius:4px; padding:0 16px;
+  font-size:14px; color:var(--text);
+  outline:none; transition:border-color .2s, background .2s;
+}
+.auth-input:focus { border-color:var(--blue); background:#fff; }
+
+.field-err { color:var(--error); font-size:12px; margin-top:4px; }
+
+.error-banner {
+  background:#fff0f0; border:1px solid var(--error);
+  border-radius:4px; padding:10px 14px;
+  color:var(--error); font-size:13px; margin-bottom:16px;
+}
+
+.forgot { display:block; text-align:right; margin-top:6px; font-size:12px; color:var(--blue); text-decoration:none; }
+.forgot:hover { text-decoration:underline; }
+
+.btn-submit {
+  width:100%; height:48px;
+  background:var(--orange); color:#fff;
+  border:none; border-radius:24px;
+  font-size:14px; font-weight:700;
+  cursor:pointer; transition:background .15s; margin-top:8px;
+}
+.btn-submit:hover { background:var(--orange-h); }
+
+.divider { display:flex; align-items:center; gap:10px; margin:20px 0; color:var(--muted); font-size:12px; }
+.divider::before,.divider::after { content:''; flex:1; height:1px; background:var(--border); }
+
+.auth-switch { text-align:center; font-size:13px; color:var(--muted); }
+.auth-switch a { color:var(--blue); text-decoration:none; font-weight:700; }
+.auth-switch a:hover { text-decoration:underline; }
+
+@media(max-width:620px){ .auth-panel{display:none;} .auth-form{padding:32px 20px;} }
+{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-box">
+
+    <div class="auth-panel">
+      <div class="auth-panel-emoji">👋</div>
+      <h2>Welcome back!</h2>
+      <p>Your communities, posts, and karma are waiting for you.</p>
+    </div>
+
+    <div class="auth-form">
+      <h1>Log In</h1>
+      <p class="auth-sub">By continuing, you agree to our User Agreement and Privacy Policy.</p>
+
+      {% if form.non_field_errors %}
+        <div class="error-banner">{% for e in form.non_field_errors %}{{ e }}{% endfor %}</div>
+      {% endif %}
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        <div class="field">
+          <div class="field-label">Username</div>
+          {{ form.username }}
+          {% for e in form.username.errors %}<div class="field-err">{{ e }}</div>{% endfor %}
+        </div>
+
+        <div class="field">
+          <div class="field-label">Password</div>
+          {{ form.password }}
+          {% for e in form.password.errors %}<div class="field-err">{{ e }}</div>{% endfor %}
+          <a href="#" class="forgot">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn-submit">Log In</button>
+      </form>
+
+      <div class="divider">or</div>
+      <div class="auth-switch">New to Reddit? <a href="{% url 'signup' %}">Sign Up</a></div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
