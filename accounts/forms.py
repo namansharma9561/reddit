@@ -4,6 +4,8 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 
+from .models import UserProfile  # ← add this line
+
 
 class SignUpForm(forms.ModelForm):
     username = forms.CharField(
@@ -73,3 +75,25 @@ class LoginForm(AuthenticationForm):
             }
         )
     )
+
+
+class ProfileEditForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ["bio", "avatar", "avatar_color"]
+        widgets = {
+            "bio": forms.Textarea(
+                attrs={
+                    "class": "auth-input",
+                    "placeholder": "Tell us about yourself...",
+                    "rows": 4,
+                    "style": "height:auto;padding-top:12px;",
+                }
+            ),
+            "avatar_color": forms.TextInput(
+                attrs={
+                    "type": "color",
+                    "class": "color-picker",
+                }
+            ),
+        }

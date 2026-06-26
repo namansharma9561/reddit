@@ -1,0 +1,124 @@
+{% extends 'accounts/base.html' %}
+{% block title %}u/{{ profile_user.username }} — Reddit{% endblock %}
+
+{% block extra_css %}
+.profile-page { max-width: 980px; margin: 24px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 312px; gap: 24px; align-items: start; }
+
+.profile-banner { height: 96px; background: linear-gradient(135deg, {{ profile.avatar_color }} 0%, #FF8C00 100%); border-radius: 4px 4px 0 0; }
+
+.profile-card { background: var(--card); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+
+.profile-card-body { padding: 12px 16px 16px; position: relative; }
+
+.profile-avatar {
+  width: 72px; height: 72px; border-radius: 50%;
+  border: 4px solid var(--card);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; font-weight: 800; color: #fff;
+  position: absolute; top: -36px; left: 16px;
+  overflow: hidden;
+}
+
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.profile-name { font-size: 20px; font-weight: 700; margin-top: 40px; margin-bottom: 2px; }
+.profile-handle { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+.profile-bio { font-size: 14px; color: var(--text); line-height: 1.6; margin-bottom: 14px; min-height: 20px; }
+
+.profile-stats { display: flex; gap: 20px; padding: 12px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 14px; }
+.pstat { text-align: center; }
+.pstat-num { font-size: 18px; font-weight: 700; color: var(--text); }
+.pstat-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.profile-cake { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+
+.btn-edit {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 100%; height: 36px;
+  border: 1px solid var(--blue); color: var(--blue); background: transparent;
+  border-radius: 20px; font-size: 14px; font-weight: 700;
+  cursor: pointer; text-decoration: none; transition: background .15s;
+}
+.btn-edit:hover { background: rgba(0,121,211,.08); }
+
+.content-card { background: var(--card); border: 1px solid var(--border); border-radius: 4px; }
+
+.content-tabs { display: flex; border-bottom: 1px solid var(--border); }
+.tab {
+  padding: 12px 16px; font-size: 14px; font-weight: 700;
+  color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent;
+  text-decoration: none; transition: color .15s, border-color .15s;
+}
+.tab:hover, .tab.active { color: var(--text); border-bottom-color: var(--orange); }
+
+.empty-state { padding: 48px; text-align: center; color: var(--muted); }
+.empty-icon { font-size: 40px; margin-bottom: 12px; }
+.empty-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+
+@media(max-width:768px){ .profile-page { grid-template-columns: 1fr; } }
+{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+
+  <div>
+    <div class="content-card">
+      <div class="content-tabs">
+        <a href="#" class="tab active">Posts</a>
+        <a href="#" class="tab">Comments</a>
+        <a href="#" class="tab">Saved</a>
+      </div>
+      <div class="empty-state">
+        <div class="empty-icon">📝</div>
+        <div class="empty-title">No posts yet</div>
+        <div>Posts by u/{{ profile_user.username }} will show up here.</div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="profile-card">
+      <div class="profile-banner"></div>
+      <div class="profile-card-body">
+        <div class="profile-avatar" style="background:{{ profile.avatar_color }};">
+          {% if profile.avatar %}
+            <img src="{{ profile.avatar.url }}" alt="{{ profile_user.username }}">
+          {% else %}
+            {{ profile_user.username|first|upper }}
+          {% endif %}
+        </div>
+        <div class="profile-name">u/{{ profile_user.username }}</div>
+        <div class="profile-handle">{{ profile_user.username }}</div>
+
+        {% if profile.bio %}
+          <div class="profile-bio">{{ profile.bio }}</div>
+        {% else %}
+          <div class="profile-bio" style="color:var(--muted);font-style:italic;">No bio yet.</div>
+        {% endif %}
+
+        <div class="profile-stats">
+          <div class="pstat">
+            <div class="pstat-num">{{ profile.karma }}</div>
+            <div class="pstat-label">Karma</div>
+          </div>
+          <div class="pstat">
+            <div class="pstat-num">0</div>
+            <div class="pstat-label">Posts</div>
+          </div>
+          <div class="pstat">
+            <div class="pstat-num">0</div>
+            <div class="pstat-label">Comments</div>
+          </div>
+        </div>
+
+        <div class="profile-cake">🎂 Cake day: {{ profile.cake_day|date:"F j, Y" }}</div>
+
+        {% if is_own %}
+          <a href="{% url 'profile_edit' %}" class="btn-edit">Edit Profile</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

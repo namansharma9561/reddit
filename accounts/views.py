@@ -4,9 +4,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
 # Create your views here.
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import LoginForm, SignUpForm
+from .forms import LoginForm, ProfileEditForm, SignUpForm
 from .models import UserProfile
 
 
@@ -68,3 +68,33 @@ def error_403(request, exception):
 
 def error_500(request):
     return render(request, "errors/500.html", status=500)
+
+
+@login_required
+def profile_view(request, username):
+    profile_user = get_object_or_404(User, username=username)
+    profile, _ = UserProfile.objects.get_or_create(user=profile_user)
+    is_own = request.user == profile_user
+    return render(
+        request,
+        "accounts/profile.html",
+        {
+            "profile_user": profile_user,
+            "profile": profile,
+            "is_own": is_own,
+        },
+    )
+
+
+@login_required
+def profile_edit_view(request):
+    profile = request.user.profile
+    if request.method == "POST":
+        form = ProfileEditForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated!")
+            return redirect("profile", username=request.user.username)
+    else:
+        form = ProfileEditForm(instance=profile)
+    return render(request, "accounts/profile_edit.html", {"form": form})
