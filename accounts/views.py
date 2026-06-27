@@ -89,12 +89,22 @@ def profile_view(request, username):
 @login_required
 def profile_edit_view(request):
     profile = request.user.profile
+
     if request.method == "POST":
+        print("POST:", request.POST)
+        print("FILES:", request.FILES)
+
         form = ProfileEditForm(request.POST, request.FILES, instance=profile)
+
         if form.is_valid():
-            form.save()
+            obj = form.save()
+            print("Saved avatar:", obj.avatar)
             messages.success(request, "Profile updated!")
             return redirect("profile", username=request.user.username)
+        else:
+            print("Errors:", form.errors)
+
     else:
         form = ProfileEditForm(instance=profile)
+
     return render(request, "accounts/profile_edit.html", {"form": form})
